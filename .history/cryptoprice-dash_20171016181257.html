@@ -1,4 +1,5 @@
 <link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module id="cryptoprice-dash">
     <template>
@@ -6,9 +7,9 @@
     </template>
 
     <script>
-        class CryptopriceDash extends Polymer.Elements {
+        class CryptopriceDash extends Polymer.Element {
             static get is() {return 'cryptoprice-dash'}
         }
-        window.customElements.define(CryptopriceDash.is, CryptopriceDash);
+        customElements.define(CryptopriceDash.is, CryptopriceDash);
     </script>
 </dom-module>

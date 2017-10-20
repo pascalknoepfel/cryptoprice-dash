@@ -1,0 +1,75 @@
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-spinner/paper-spinner-lite.html">
+
+<dom-module id="cryptoprice-dash">
+    <template>
+        <h2>Hello World</h2>
+        <iron-ajax id="coinbase" handle-as="json" on-response="_handleResponse" loading="{{loading}}"></iron-ajax>
+        <template is="dom-repeat" items="[[currencies]]">
+            <p>[[item.code]] - [[item.name]] - [[item.price]]</p>
+        </template>
+    </template>
+
+    <script>
+        class CryptopriceDash extends Polymer.Element {
+            static get is() { return 'cryptoprice-dash' }
+            static get properties() {
+                return {
+                    currencies: {
+                        type: Array,
+                        value: [
+                            {
+                                code: 'BTC',
+                                name: 'Bitcoin',
+                                price: 0
+                            },
+                            {
+                                code: 'ETH',
+                                name: 'Ethereum',
+                                price: 0
+                            },
+                            {
+                                code: 'LTC',
+                                name: 'Litecoin',
+                                price: 0
+                            }
+                        ]
+                    },
+                    loading: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+                Polymer.RenderStatus.afterNextRender(this, function() {
+                    this._getCurrencyData();
+                })
+            }
+
+            _getCurrencyData() {
+                var ajax = this.$.coinbase;
+                var currencies = this.currencies;
+                currencies.forEach(function(element) {
+                    ajax.url = 'https://api.coinbase.com/v2/prices/' + element.code + '-USD/spot';
+                    ajax.generateRequest();
+                }, this);
+            }
+
+            _handleResponse(response) {
+                this._computeCurrencyPrice(response.detail);
+            }
+
+            _computeCurrencyPrice(data){
+                var code = data.url.substring(35,38);
+                var index = this.currencies.map(function (e) { return e.code; }).indexOf(code);
+                this.set('currencies.' + index + '.price', data.response.data.amount);
+            }
+        }
+        customElements.define(CryptopriceDash.is, CryptopriceDash);
+    </script>
+</dom-module>
